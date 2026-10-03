@@ -1,5 +1,6 @@
 import styles from "./page.module.css";
 import Footer from "@/components/footer/Footer";
+import ProductItem from "@/components/ProductItem";
 
 const products = [
   {
@@ -35,13 +36,7 @@ export default function Home() {
       <h1>პროდუქტები</h1>
 
       {products.map((product) => (
-        <article key={product.id}>
-          <p>ID: {product.id}</p>
-          <h2>{product.title}</h2>
-          <img src={product.image} alt={product.title} width="160" />
-          <p>ფასი: ${product.price}</p>
-          <p>{product.description}</p>
-        </article>
+        <ProductItem key={product.id} product={product} />
       ))}
 
       <Footer />
