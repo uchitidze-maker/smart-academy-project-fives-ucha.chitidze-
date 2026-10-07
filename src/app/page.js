@@ -3,15 +3,16 @@
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import Footer from "@/components/footer/Footer";
-import ProductItem from "@/components/ProductItem";
+import ProductItem from "@/components/productItem/ProductItem";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
+  const [deletedProducts, setDeletedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch("https://fakestoreapi.com/products")
+    fetch("https://dummyjson.com/products?limit=20")
       .then((response) => {
         if (!response.ok) {
           throw new Error("პროდუქტები ვერ ჩაიტვირთა");
@@ -20,7 +21,7 @@ export default function Home() {
         return response.json();
       })
       .then((data) => {
-        setProducts(data);
+        setProducts(data.products);
         setLoading(false);
       })
       .catch(() => {
@@ -28,6 +29,15 @@ export default function Home() {
         setLoading(false);
       });
   }, []);
+
+  function deleteProduct(product) {
+    const remainingProducts = products.filter(
+      (item) => item.id !== product.id
+    );
+
+    setProducts(remainingProducts);
+    setDeletedProducts([...deletedProducts, product]);
+  }
 
   if (loading) {
     return <p>იტვირთება</p>;
@@ -39,11 +49,27 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
-      <h1>პროდუქტები</h1>
+      <section>
+        <h1>პროდუქტები ({products.length})</h1>
 
-      {products.map((product) => (
-        <ProductItem key={product.id} product={product} />
-      ))}
+        {products.map((product) => (
+          <ProductItem
+            key={product.id}
+            product={product}
+            onDelete={deleteProduct}
+          />
+        ))}
+      </section>
+
+      {deletedProducts.length > 0 && (
+        <section>
+          <h2>წაშლილი პროდუქტები ({deletedProducts.length})</h2>
+
+          {deletedProducts.map((product) => (
+            <ProductItem key={product.id} product={product} />
+          ))}
+        </section>
+      )}
 
       <Footer />
     </div>
